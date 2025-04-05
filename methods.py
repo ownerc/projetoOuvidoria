@@ -12,7 +12,7 @@ def listaManifestacoes(connection):
         print("Nenhuma manifestação registrada até o momento.")
 
 def listaManifestacoesTipo(connection):
-    tipoManifestacao = input("Descreva o tipo de manifestação (reclamação, elogio, sugestão): ").lower()
+    tipoManifestacao = input("Informe se a manifestação é uma reclamação, elogio ou sugestão: ")
     consultaTipo = 'select * from Ouvidoria where tipo = (%s)'
     dadosManifestacao = [tipoManifestacao]
     manifestacoes = listarBancoDados(connection, consultaTipo, dadosManifestacao)
@@ -23,7 +23,7 @@ def listaManifestacoesTipo(connection):
         print(f"Não há manifestações do tipo {tipoManifestacao}.")
 
 def registrarManifestacao(connection):
-    tipoManifestacao = input("Qual o tipo de manifestação? (reclamação, elogio, sugestão): ").lower()
+    tipoManifestacao = input("Informe se a manifestação é uma reclamação, elogio ou sugestão: ")
     novaManifestacao = input("Descreva sua manifestação: ")
     inserirManifestacaoBD = 'insert into Ouvidoria (manifestacao, tipo) values (%s, %s)'
     dadosManifestacao = [novaManifestacao, tipoManifestacao]
