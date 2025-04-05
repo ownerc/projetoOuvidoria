@@ -2,8 +2,6 @@ from operacoesbd import *
 
 connection = criarConexao('localhost', 'root', '53421', 'sistema_ouvidoria')
 
-opcao = 1
-
 def listaManifestacoes(connection):
     consultaLista = 'select * from Ouvidoria'
     manifestacoes = listarBancoDados(connection, consultaLista)
@@ -11,41 +9,23 @@ def listaManifestacoes(connection):
         for item in manifestacoes:
             print(f"Manifestação {item[0]}:\n{item[1]}")
     else:
-        print("Nenhuma manifestação foi registrada até o momento.")
+        print("Nenhuma manifestação registrada até o momento.")
+
+def listaManifestacoesTipo(connection):
+    tipoManifestacao = input("Descreva o tipo de manifestação (reclamação, elogio, sugestão): ").lower()
+    consultaTipo = 'select * from Ouvidoria where tipo = (%s)'
+    dadosManifestacao = [tipoManifestacao]
+    manifestacoes = listarBancoDados(connection, consultaTipo, dadosManifestacao)
+    if len(manifestacoes) > 0:
+        for item in manifestacoes:
+            print(f"Manifestação {item[0]}: {item[1]} ({item[2]})")
+    else:
+        print(f"Não há manifestações do tipo {tipoManifestacao}.")
 
 def registrarManifestacao(connection):
+    tipoManifestacao = input("Qual o tipo de manifestação? (reclamação, elogio, sugestão): ").lower()
     novaManifestacao = input("Descreva sua manifestação: ")
-    inserirManifestacao = 'insert into Ouvidoria (manifestacao) values (%s)'
-    dadosManifestacao = [novaManifestacao]
-    insertNoBancoDados(connection, inserirManifestacao, dadosManifestacao)
-    print("Sua manifestação foi registrada.")
-
-def totalManifestacoes(connection):
-    quantidadeManifestacoes = 'select count(*) from Ouvidoria'
-    quantidadeTotal = listarBancoDados(connection, quantidadeManifestacoes)
-    print(f"O total de manifestções registradas é: {quantidadeTotal[0][0]}.")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-encerrarConexao(connection)
+    inserirManifestacaoBD = 'insert into Ouvidoria (manifestacao, tipo) values (%s, %s)'
+    dadosManifestacao = [novaManifestacao, tipoManifestacao]
+    insertNoBancoDados(connection, inserirManifestacaoBD, dadosManifestacao)
+    print("A manifestação foi registrada com sucesso.")
