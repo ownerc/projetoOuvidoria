@@ -29,3 +29,30 @@ def registrarManifestacao(connection):
     dadosManifestacao = [novaManifestacao, tipoManifestacao]
     insertNoBancoDados(connection, inserirManifestacaoBD, dadosManifestacao)
     print("A manifestação foi registrada com sucesso.")
+
+def totalManifestacoes(connection):
+    quantidadeManifestacoes = 'select count(*) from Ouvidoria'
+    quantidadeTotal = listarBancoDados(connection, quantidadeManifestacoes)
+    print(f"O total de manifestações registradas é: {quantidadeTotal[0][0]}.")
+
+def pesquisarManifestacaoCodigo(connection):
+    codigoManifestacao = int(input("Insira o código da manifestação: "))
+    consultaLista = 'select * from Ouvidoria where codigo = (%s)'
+    dadosManifestacao = [codigoManifestacao]
+    manifestacoes = listarBancoDados(connection, consultaLista, dadosManifestacao)
+    if len(manifestacoes) > 0:
+        print(f"Manifestação {codigoManifestacao}: {manifestacoes[0][1]}")
+    else:
+        print(f"Não encontramos uma manifestação com o código {codigoManifestacao}.")
+
+def removerManifestacao(connection):
+    codigoManifestacao = int(input("Insira o código da manifestação: "))
+    manifestacaoDelete = 'delete from Ouvidoria where codigo = (%s)'
+    dadosManifestacao = [codigoManifestacao]
+    linhasAfetadas = excluirBancoDados(connection, manifestacaoDelete, dadosManifestacao)
+    if linhasAfetadas > 0:
+        print(f"A manifestação {codigoManifestacao} foi removida.")
+    else:
+        print("Não há manifestações a serem removidas.")
+
+encerrarConexao(connection)
