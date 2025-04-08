@@ -1,6 +1,6 @@
 from operacoesbd import *
 
-connection = criarConexao('localhost', 'root', '53421', 'sistema_ouvidoria')
+connection = criarConexao('127.0.0.1', 'root', '53421', 'sistema_ouvidoria')
 
 def listaManifestacoes(connection):
     consultaLista = 'select * from Ouvidoria'
@@ -12,23 +12,38 @@ def listaManifestacoes(connection):
         print("Nenhuma manifestação registrada até o momento.")
 
 def listaManifestacoesTipo(connection):
-    tipoManifestacao = input("Informe se a manifestação é uma reclamação, elogio ou sugestão: ")
-    consultaTipo = 'select * from Ouvidoria where tipo = (%s)'
-    dadosManifestacao = [tipoManifestacao]
-    manifestacoes = listarBancoDados(connection, consultaTipo, dadosManifestacao)
-    if len(manifestacoes) > 0:
-        for item in manifestacoes:
-            print(f"Manifestação {item[0]}: {item[1]} ({item[2]})")
-    else:
-        print(f"Não há manifestações do tipo {tipoManifestacao}.")
+    tiposValidos = ['reclamação', 'elogio', 'sugestão']
+    while True:
+        tipoManifestacao = input("Informe se a manifestação é uma reclamação, elogio ou sugestão: ").strip().lower()
+        if tipoManifestacao not in tiposValidos:
+            print(f"Tipo de manifestação inválido. Por favor, escolha entre {tiposValidos[0]}, {tiposValidos[1]} ou {tiposValidos[2]}.")
+            continue
+        consultaTipo = 'select * from Ouvidoria where tipo = (%s)'
+        dadosManifestacao = [tipoManifestacao]
+        manifestacoes = listarBancoDados(connection, consultaTipo, dadosManifestacao)
+        if len(manifestacoes) > 0:
+            for item in manifestacoes:
+                print(f"Manifestação {item[0]}: {item[1]} ({item[2]})")
+        else:
+            print(f"Não há manifestações do tipo {tipoManifestacao}.")
+        break
 
 def registrarManifestacao(connection):
-    tipoManifestacao = input("Informe se a manifestação é uma reclamação, elogio ou sugestão: ")
-    novaManifestacao = input("Descreva sua manifestação: ")
-    inserirManifestacaoBD = 'insert into Ouvidoria (manifestacao, tipo) values (%s, %s)'
-    dadosManifestacao = [novaManifestacao, tipoManifestacao]
-    insertNoBancoDados(connection, inserirManifestacaoBD, dadosManifestacao)
-    print("A manifestação foi registrada com sucesso.")
+    tiposValidos = ['reclamação', 'elogio', 'sugestão']
+    while True:
+        tipoManifestacao = input("Informe se a manifestação é uma reclamação, elogio ou sugestão: ").strip().lower()
+        if tipoManifestacao not in tiposValidos:
+            print(f"Tipo de manifestação inválido. Por favor, escolha entre {tiposValidos[0]}, {tiposValidos[1]} ou {tiposValidos[2]}.")
+            continue
+        novaManifestacao = input("Descreva sua manifestação: ")
+        if not novaManifestacao:
+            print("A manifestação não pode estar vazia. Tente novamente.")
+            continue
+        inserirManifestacaoBD = 'insert into Ouvidoria (manifestacao, tipo) values (%s, %s)'
+        dadosManifestacao = [novaManifestacao, tipoManifestacao]
+        insertNoBancoDados(connection, inserirManifestacaoBD, dadosManifestacao)
+        print("A manifestação foi registrada com sucesso.")
+        break
 
 def totalManifestacoes(connection):
     quantidadeManifestacoes = 'select count(*) from Ouvidoria'
